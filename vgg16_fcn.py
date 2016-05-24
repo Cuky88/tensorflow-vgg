@@ -8,7 +8,7 @@ import tensorflow as tf
 VGG_MEAN = [103.939, 116.779, 123.68]
 
 
-class Vgg16:
+class Vgg16_fcn:
     def __init__(self, vgg16_npy_path=None):
         if vgg16_npy_path is None:
             path = sys.modules[self.__class__.__module__].__file__
