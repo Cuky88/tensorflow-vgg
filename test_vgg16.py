@@ -1,3 +1,7 @@
+import skimage
+import skimage.io
+import skimage.transform
+
 import numpy as np
 import tensorflow as tf
 
