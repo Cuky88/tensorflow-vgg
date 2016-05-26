@@ -23,11 +23,18 @@ with tf.Session() as sess:
     images = tf.placeholder("float", [2, 224, 224, 3])
     feed_dict = {images: batch}
 
-    vgg_fcn = vgg16_fcn.Vgg16_fcn()
+    vgg_fcn = vgg16_fcn.Vgg16FCN()
     with tf.name_scope("content_vgg"):
         vgg_fcn.build(images)
 
+    init = tf.initialize_all_variables()
+    sess.run(tf.initialize_all_variables())
+
     prob = sess.run(vgg_fcn.prob, feed_dict=feed_dict)
+    prob_orig = np.load('vgg_orig.npy')
+
+    assert(np.all(prob == prob_orig))
+    print('The output has not changed')
 
     print(prob)
     utils.print_prob(prob[0], './synset.txt')

@@ -8,7 +8,7 @@ import tensorflow as tf
 VGG_MEAN = [103.939, 116.779, 123.68]
 
 
-class Vgg16_fcn:
+class Vgg16FCN:
     def __init__(self, vgg16_npy_path=None):
         if vgg16_npy_path is None:
             path = sys.modules[self.__class__.__module__].__file__
@@ -101,11 +101,11 @@ class Vgg16_fcn:
             #     dim *= d
             # x = tf.reshape(bottom, [-1, dim])
             if name == 'fc6':
-                filt = self.get_fc_weight_reshape(name,[7,7,512,4096])
+                filt = self.get_fc_weight_reshape(name, [7, 7, 512, 4096])
             elif name == 'fc8':
-                filt = self.get_fc_weight_reshape(name,[1,1,4096,1000])
+                filt = self.get_fc_weight_reshape(name, [1, 1, 4096, 1000])
             else:
-                filt = self.get_fc_weight_reshape(name,[1,1,4096,4096])
+                filt = self.get_fc_weight_reshape(name, [1, 1, 4096, 4096])
             conv = tf.nn.conv2d(bottom, filt, [1, 1, 1, 1], padding='VALID')
             conv_biases = self.get_bias(name)
             bias = tf.nn.bias_add(conv, conv_biases)
@@ -113,14 +113,28 @@ class Vgg16_fcn:
             return bias
 
     def get_conv_filter(self, name):
-        return tf.constant(self.data_dict[name][0], name="filter")
+        init = tf.constant_initializer(value=self.data_dict[name][0],
+                                       dtype=tf.float32)
+        shape = self.data_dict[name][0].shape
+        return tf.get_variable(name="filter", initializer=init, shape=shape)
 
     def get_bias(self, name):
-        return tf.constant(self.data_dict[name][1], name="biases")
+        init = tf.constant_initializer(value=self.data_dict[name][1],
+                                       dtype=tf.float32)
+        shape = self.data_dict[name][1].shape
+        return tf.get_variable(name="biases", initializer=init, shape=shape)
+
+    def get_fc_weight(self, name):
+        init = tf.constant_initializer(value=self.data_dict[name][0],
+                                       dtype=tf.float32)
+        shape = self.data_dict[name][0].shape
+        return tf.get_variable(name="weights", initializer=init, shape=shape)
 
     def get_fc_weight_reshape(self, name, shape):
         print('Layer name: %s' % name)
         print('Layer shape: %s' % shape)
         weights = self.data_dict[name][0]
         weights = weights.reshape(shape)
-        return tf.constant(weights, name="weights")
+        init = tf.constant_initializer(value=weights,
+                                       dtype=tf.float32)
+        return tf.get_variable(name="weights", initializer=init, shape=shape)
