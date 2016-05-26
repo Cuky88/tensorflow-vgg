@@ -24,7 +24,8 @@ with tf.Session() as sess:
     with tf.name_scope("content_vgg"):
         vgg.build(images)
 
-    prob = sess.run(vgg.prob, feed_dict=feed_dict)
-    print(prob)
+    pred = tf.argmax(vgg.prob)
+
+    pred = sess.run(vgg.pred, feed_dict=feed_dict)
     utils.print_prob(prob[0], './synset.txt')
     utils.print_prob(prob[1], './synset.txt')
