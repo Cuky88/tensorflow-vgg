@@ -1,0 +1,12 @@
+/home/marvin/workarea/tensorflow-vgg/vgg16.npy
+npy file loaded
+[[  3.17087578e-09   5.07242159e-09   1.05872255e-09 ...,   1.04696758e-08
+    3.06412460e-08   2.61181743e-08]
+ [  2.78770198e-08   4.09665830e-07   1.02866871e-08 ...,   1.14108225e-07
+    6.34676240e-08   1.54262871e-05]]
+('prob shape', (1000,))
+('Top1: ', 'n02129604 tiger, Panthera tigris', 0.8209911)
+('Top5: ', [('n02129604 tiger, Panthera tigris', 0.8209911), ('n02123159 tiger cat', 0.17724623), ('n02128925 jaguar, panther, Panthera onca, Felis onca', 0.0012660719), ('n02127052 lynx, catamount', 0.00020411433), ('n02128385 leopard, Panthera pardus', 0.00016284359)])
+('prob shape', (1000,))
+('Top1: ', 'n03598930 jigsaw puzzle', 0.99591595)
+('Top5: ', [('n03598930 jigsaw puzzle', 0.99591595), ('n03291819 envelope', 0.00028709538), ('n03908618 pencil box, pencil case', 0.00022539574), ('n03188531 diaper, nappy, napkin', 0.00021808635), ('n04033995 quilt, comforter, comfort, puff', 0.00018453547)])
