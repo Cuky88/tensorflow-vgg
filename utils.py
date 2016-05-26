@@ -6,6 +6,11 @@ import numpy as np
 
 # synset = [l.strip() for l in open('synset.txt').readlines()]
 
+def color_image(image):
+    import matplotlib.cm as cm
+    mycm = cm.get_cmap('Set1')
+    return mycm(image)
+
 
 # returns image of shape [224, 224, 3]
 # [height, width, depth]
