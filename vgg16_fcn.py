@@ -1,5 +1,6 @@
 import os
 import logging
+from math import ceil
 import sys
 
 import numpy as np
@@ -73,7 +74,8 @@ class Vgg16FCN:
             self.relu7 = tf.nn.dropout(self.relu7, 0.5)
 
         self.fc8 = self._fc_layer(self.relu7, "fc8")
-        self.reshape = tf.reshape(self.fc8, [-1, 1000])
+        # self.reshape = tf.reshape(self.fc8, [-1, 1000])
+
         self.prob = tf.nn.softmax(self.reshape, name="prob")
 
     def _max_pool(self, bottom, name):
@@ -111,6 +113,43 @@ class Vgg16FCN:
             bias = tf.nn.bias_add(conv, conv_biases)
 
             return bias
+
+    def _upscore_layer(self, bottom, shape,
+                       num_classes, name,
+                       ksize=4, stride=2,
+                       wd=5e-4):
+        strides = [1, stride, stride, 1]
+        with tf.variable_scope(name):
+            in_features = bottom.get_shape()[3].value
+            new_shape = [shape[0], shape[1], shape[2], num_classes]
+            output_shape = tf.pack(new_shape)
+
+            logging.debug("Layer: %s, Fan-in: %d" % (name, in_features))
+            f_shape = [ksize, ksize, num_classes, in_features]
+
+            # create
+            num_input = ksize * ksize * in_features / stride
+            stddev = (2 / num_input)**0.5
+
+            weights = self.get_deconv_filter(f_shape, wd)
+            deconv = tf.nn.conv2d_transpose(bottom, weights, output_shape,
+                                            strides=strides, padding='SAME')
+        return deconv
+
+    def get_deconv_filter(self, f_shape, wd):
+        width = f_shape[0]
+        heigh = f_shape[0]
+        f = ceil(width/2.0)
+        c = (2 * f - 1 - f % 2) / (2.0 * f)
+        weights = np.zeros(f_shape)
+        for x in range(width):
+            for y in range(heigh):
+                value = (1 - abs(x / f - c)) * (1 - abs(y / f - c))
+                f_shape[x, y, :, :].fill(value)
+        init = tf.constant_initializer(value=weights,
+                                       dtype=tf.float32)
+        return tf.get_variable(name="up_filter",
+                               initializer=init, shape=f_shape)
 
     def get_conv_filter(self, name):
         init = tf.constant_initializer(value=self.data_dict[name][0],
