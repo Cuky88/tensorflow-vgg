@@ -1,3 +1,4 @@
+"""."""
 import skimage
 import skimage.io
 import skimage.transform
@@ -24,7 +25,15 @@ with tf.Session() as sess:
     with tf.name_scope("content_vgg"):
         vgg.build(images)
 
+    init = tf.initialize_all_variables()
+    sess.run(tf.initialize_all_variables())
+
     prob = sess.run(vgg.prob, feed_dict=feed_dict)
+    prob_orig = np.load('vgg_orig.npy')
+
+    assert(np.all(prob == prob_orig))
+    print('The output has not changed')
+
     print(prob)
     utils.print_prob(prob[0], './synset.txt')
     utils.print_prob(prob[1], './synset.txt')

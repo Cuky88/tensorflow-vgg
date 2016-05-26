@@ -107,10 +107,19 @@ class Vgg16:
             return fc
 
     def get_conv_filter(self, name):
-        return tf.constant(self.data_dict[name][0], name="filter")
+        init = tf.constant_initializer(value=self.data_dict[name][0],
+                                       dtype=tf.float32)
+        shape = self.data_dict[name][0].shape
+        return tf.get_variable(name="filter", initializer=init, shape=shape)
 
     def get_bias(self, name):
-        return tf.constant(self.data_dict[name][1], name="biases")
+        init = tf.constant_initializer(value=self.data_dict[name][1],
+                                       dtype=tf.float32)
+        shape = self.data_dict[name][1].shape
+        return tf.get_variable(name="biases", initializer=init, shape=shape)
 
     def get_fc_weight(self, name):
-        return tf.constant(self.data_dict[name][0], name="weights")
+        init = tf.constant_initializer(value=self.data_dict[name][0],
+                                       dtype=tf.float32)
+        shape = self.data_dict[name][0].shape
+        return tf.get_variable(name="weights", initializer=init, shape=shape)
