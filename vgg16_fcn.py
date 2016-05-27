@@ -202,10 +202,7 @@ class Vgg16FCN:
         weights = np.zeros(f_shape)
         for i in range(f_shape[2]):
             weights[:, :, i, i] = bilinear
-        init = tf.constant_initializer(value=weights,
-                                       dtype=tf.float32)
-        return tf.get_variable(name="up_filter",
-                               initializer=init, shape=f_shape)
+        return tf.constant(weights, name="up_filter", dtype=tf.float32)
 
     def get_conv_filter(self, name):
         init = tf.constant_initializer(value=self.data_dict[name][0],
