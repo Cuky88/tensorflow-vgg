@@ -28,15 +28,15 @@ class Vgg16FCN:
 
         # Convert RGB to BGR
         red, green, blue = tf.split(3, 3, rgb_scaled)
-        assert red.get_shape().as_list()[1:] == [224, 224, 1]
-        assert green.get_shape().as_list()[1:] == [224, 224, 1]
-        assert blue.get_shape().as_list()[1:] == [224, 224, 1]
+        # assert red.get_shape().as_list()[1:] == [224, 224, 1]
+        # assert green.get_shape().as_list()[1:] == [224, 224, 1]
+        # assert blue.get_shape().as_list()[1:] == [224, 224, 1]
         bgr = tf.concat(3, [
             blue - VGG_MEAN[0],
             green - VGG_MEAN[1],
             red - VGG_MEAN[2],
         ])
-        assert bgr.get_shape().as_list()[1:] == [224, 224, 3]
+        # assert bgr.get_shape().as_list()[1:] == [224, 224, 3]
 
         self.conv1_1 = self._conv_layer(bgr, "conv1_1")
         self.conv1_2 = self._conv_layer(self.conv1_1, "conv1_2")
@@ -74,9 +74,15 @@ class Vgg16FCN:
             self.relu7 = tf.nn.dropout(self.relu7, 0.5)
 
         self.fc8 = self._fc_layer(self.relu7, "fc8")
+
+        self.pred = tf.argmax(self.fc8, dimension=3)
+
+        self.up = self._upscore_layer(self.fc8, shape=tf.shape(bgr),
+                                      num_classes=1000,
+                                      name='up', ksize=64, stride=32)
         # self.reshape = tf.reshape(self.fc8, [-1, 1000])
 
-        self.prob = tf.nn.softmax(self.reshape, name="prob")
+        # self.prob = tf.nn.softmax(self.reshape, name="prob")
 
     def _max_pool(self, bottom, name):
         return tf.nn.max_pool(bottom, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1],
