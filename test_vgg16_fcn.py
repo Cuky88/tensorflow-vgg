@@ -4,6 +4,7 @@ import skimage.transform
 
 import numpy as np
 import tensorflow as tf
+import os
 
 import vgg16
 import vgg16_fcn as vgg16_fcn
@@ -19,6 +20,7 @@ batch2 = img2.reshape((1, 224, 224, 3))
 
 batch = np.concatenate((batch1, batch2), 0)
 
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 with tf.Session() as sess:
     images = tf.placeholder("float", [2, 224, 224, 3])
     feed_dict = {images: batch}
@@ -27,8 +29,12 @@ with tf.Session() as sess:
     with tf.name_scope("content_vgg"):
         vgg_fcn.build(images)
 
+    print('Finished building Network.')
+
     init = tf.initialize_all_variables()
     sess.run(tf.initialize_all_variables())
+
+    print('Starting to run Network.')
 
     prob = sess.run(vgg_fcn.prob, feed_dict=feed_dict)
     prob_orig = np.load('vgg_orig.npy')

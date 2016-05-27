@@ -25,6 +25,8 @@ with tf.Session() as sess:
     with tf.name_scope("content_vgg"):
         vgg.build(images)
 
+    print('Finished building Newtwork.')
+
     init = tf.initialize_all_variables()
     sess.run(tf.initialize_all_variables())
 
